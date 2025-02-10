@@ -1,5 +1,12 @@
 ## localstack-demo
 This is a demo project to show how to use localstack with Golang and Terraform.
+With LocalStack, you can emulate AWS resources locally and debug, to some extent.
+However there are some issues and limitations when testing cloud resources in your local machine.
+For example in this project, I have found following things that wouldn't reproduce on the actural cloud environment.
+- IAM role/policy is completely ignored
+- SQS's batching window and batch size is ignored
+
+So, I have concluded, while LocalStack is a great tool to quickly test your lambda when writing code, you'll still need to test them on actual AWS environment. 
 
 ## Architecture
 <img width="821" alt="Screenshot 2025-02-10 at 18 12 37" src="https://github.com/user-attachments/assets/cc692de9-9b41-48fe-8535-230231220539" />
