@@ -1,0 +1,7 @@
+bootstrap
+bootstrap.zip
+bootstrap.zip.base64sha256
+*.tfstate
+*.tfstate.backup
+.terraform
+volume/*

@@ -1,0 +1,20 @@
+{
+    "Records": [
+        {
+            "attributes": {
+                "ApproximateFirstReceiveTimestamp": "1739122065117",
+                "ApproximateReceiveCount": "1",
+                "SenderId": "000000000000",
+                "SentTimestamp": "1739122064657"
+            },
+            "awsRegion": "eu-west-2",
+            "body": "{\"test\": \"abc\"}",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:eu-west-2:000000000000:test",
+            "md5OfBody": "ea63c300c845f3e76d8f5827aa0a1f89",
+            "messageAttributes": {},
+            "messageId": "560c48a5-b595-4960-b52d-fca793c309d5",
+            "receiptHandle": "ZTcyY2Y4YmUtZTc5ZC00NWM2LWE5M2MtNmEzYjMyNTVhYzMyIGFybjphd3M6c3FzOmV1LXdlc3QtMjowMDAwMDAwMDAwMDA6dGVzdCA1NjBjNDhhNS1iNTk1LTQ5NjAtYjUyZC1mY2E3OTNjMzA5ZDUgMTczOTEyMjA2NS4xMTc1Mzk="
+        }
+    ]
+}
