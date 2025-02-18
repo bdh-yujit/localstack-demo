@@ -59,6 +59,12 @@ module "localstack-demo-lambda" {
     DYNAMODB_ENDPOINT   = "http://localhost.localstack.cloud:4566"
     USER_SQS_URL        = aws_sqs_queue.test.url
     SQS_ENDPOINT        = "http://localhost.localstack.cloud:4566"
+    DB_NAME             = "ih_authenticator"
+    DB_USER             = "root"
+    DB_PASSWORD         = "password"
+    DB_READER_HOST      = "db.lh.local"
+    DB_WRITER_HOST      = "db.lh.local"
+    DB_PORT             = "3306"
   }
 }
 
@@ -154,6 +160,34 @@ resource "aws_api_gateway_rest_api" "my_api" {
                     type = "object"
                     properties = {
                       id = { type = "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        get = {
+          operationId = "listUsers"
+          x-amazon-apigateway-integration = {
+            httpMethod           = "POST"
+            payloadFormatVersion = "1.0"
+            type                 = "AWS_PROXY"
+            uri                  = "${module.localstack-demo-lambda.invoke_arn}"
+          }
+          responses = {
+            "200" = {
+              description = "200 response"
+              content = {
+                "application/json" = {
+                  schema = {
+                    type = "array"
+                    items = {
+                      type = "object"
+                      properties = {
+                        id   = { type = "string" }
+                        name = { type = "string" }
+                      }
                     }
                   }
                 }

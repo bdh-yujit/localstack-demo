@@ -25,16 +25,16 @@ func NewUsecase(
 	}
 }
 
-type ExecuteInput struct {
+type CreateUserInput struct {
 	Name      string
 	BirthDate string
 }
 
-type ExecuteOutput struct {
+type CreateUserOutput struct {
 	ID string
 }
 
-func (u *Usecase) Execute(input ExecuteInput) (*ExecuteOutput, error) {
+func (u *Usecase) CreateUser(input CreateUserInput) (*CreateUserOutput, error) {
 	birthDate, err := time.Parse("2006-01-02", input.BirthDate)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse birth date, %w", err)
@@ -59,7 +59,16 @@ func (u *Usecase) Execute(input ExecuteInput) (*ExecuteOutput, error) {
 		return nil, fmt.Errorf("failed to process user, %w", err)
 	}
 
-	return &ExecuteOutput{
+	return &CreateUserOutput{
 		ID: id,
 	}, nil
+}
+
+func (u *Usecase) GetUser(id int64) (*model.User, error) {
+	user, err := u.UserRepository.Get(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user, %w", err)
+	}
+
+	return user, nil
 }

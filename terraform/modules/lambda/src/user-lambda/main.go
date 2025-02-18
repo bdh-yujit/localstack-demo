@@ -5,17 +5,29 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/test-lambda/adapter"
 	"github.com/test-lambda/application/usecase"
-	"github.com/test-lambda/infrastructure/dynamodb"
+	"github.com/test-lambda/infrastructure/mysql"
 )
 
 type CreateUserPayload struct {
 	Name      string `json:"name"`
 	BirthDate string `json:"birth_date"`
+}
+
+type GetUserPayload struct {
+	Id int64 `json:"id"`
+}
+
+func init() {
+	err := mysql.InitDBConn()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {
@@ -70,17 +82,14 @@ func HandleRequest(ctx context.Context, p events.APIGatewayProxyRequest) (*event
 			return nil, NewInvalidRequestError("BirthDate is required", nil)
 		}
 
-		repo, err := dynamodb.NewUserRepository()
-		if err != nil {
-			return nil, err
-		}
+		repo := adapter.NewUserRepository()
 
 		service, err := adapter.NewUserProcessServiceAdapter()
 		if err != nil {
 			return nil, err
 		}
 
-		output, err := usecase.NewUsecase(repo, service).Execute(usecase.ExecuteInput{
+		output, err := usecase.NewUsecase(repo, service).CreateUser(usecase.CreateUserInput{
 			Name:      payload.Name,
 			BirthDate: payload.BirthDate,
 		})
@@ -98,6 +107,27 @@ func HandleRequest(ctx context.Context, p events.APIGatewayProxyRequest) (*event
 			StatusCode: 200,
 			Body:       string(respBodyBytes),
 		}, nil
+	case "GET":
+		id := p.QueryStringParameters["id"]
+		idInt, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			return nil, NewInvalidRequestError("Invalid id", err)
+		}
+		output, err := usecase.NewUsecase(adapter.NewUserRepository(), nil).GetUser(idInt)
+		if err != nil {
+			return nil, err
+		}
+
+		respBodyBytes, err := json.Marshal(output)
+		if err != nil {
+			return nil, err
+		}
+
+		return &events.APIGatewayProxyResponse{
+			StatusCode: 200,
+			Body:       string(respBodyBytes),
+		}, nil
+
 	}
 
 	return nil, NewInvalidRequestError(fmt.Sprintf("Unsupported HTTP method: %s", p.HTTPMethod), nil)

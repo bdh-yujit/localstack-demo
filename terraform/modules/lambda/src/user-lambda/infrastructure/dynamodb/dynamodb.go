@@ -10,14 +10,17 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/test-lambda/application/domain/model"
-	"github.com/test-lambda/application/domain/repository"
 )
 
-type UserRepositoryImpl struct {
+type UserDao interface {
+	Save(user model.User) error
+}
+
+type UserDaoImpl struct {
 	client *dynamodb.Client
 }
 
-func NewUserRepository() (repository.UserRepository, error) {
+func NewDynamoDbUserDao() (UserDao, error) {
 
 	customResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 
@@ -32,7 +35,7 @@ func NewUserRepository() (repository.UserRepository, error) {
 		return nil, err
 	}
 
-	return &UserRepositoryImpl{
+	return &UserDaoImpl{
 		client: dynamodb.NewFromConfig(dynamoDBConf),
 	}, nil
 }
@@ -43,7 +46,7 @@ type UserTable struct {
 	BirthDate string `dynamodbav:"birth_date"`
 }
 
-func (r *UserRepositoryImpl) Save(user model.User) error {
+func (r *UserDaoImpl) Save(user model.User) error {
 	item := UserTable{
 		ID:        user.ID,
 		Name:      user.Name,

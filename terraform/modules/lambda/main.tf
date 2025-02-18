@@ -33,13 +33,13 @@ resource "null_resource" "this" {
     command = "cd ${local.this_function_dir} && zip -j ./archive/bootstrap.zip ./build/bootstrap"
   }
   provisioner "local-exec" {
-    command = "cd ${local.this_function_dir} && aws s3 cp ./${local.this_object_path} s3://${aws_s3_bucket.this.bucket}/${local.this_object_path} --endpoint=http://localhost.localstack.cloud:4566 --checksum-algorithm SHA256"
+    command = "cd ${local.this_function_dir} && aws s3 cp ./${local.this_object_path} s3://${aws_s3_bucket.this.bucket}/${local.this_object_path} --checksum-algorithm SHA256"
   }
   provisioner "local-exec" {
     command = "cd ${local.this_function_dir} && openssl dgst -sha256 -binary ./${local.this_object_path} | openssl enc -base64 | tr -d \"\n\" > ./${local.this_object_base64sha256_path}"
   }
   provisioner "local-exec" {
-    command = "cd ${local.this_function_dir} && aws s3 cp ./${local.this_object_base64sha256_path} s3://${aws_s3_bucket.this.bucket}/${local.this_object_base64sha256_path} --content-type \"text/plain\" --endpoint=http://localhost.localstack.cloud:4566 --checksum-algorithm SHA256"
+    command = "cd ${local.this_function_dir} && aws s3 cp ./${local.this_object_base64sha256_path} s3://${aws_s3_bucket.this.bucket}/${local.this_object_base64sha256_path} --content-type \"text/plain\" --checksum-algorithm SHA256"
   }
 }
 
